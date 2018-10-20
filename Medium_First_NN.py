@@ -1,36 +1,63 @@
 import numpy as np
 
-class NeuralNetwork():
-  def __init__(self):
-    self.synapse_weights = np.random.rand(4,1)
+class Perceptron():
+    def __init__(self):
+        self.syn_weights = np.random.rand(4,1)
 
-  def sigmoid(self, x):
-    sigmoid = 1 / (1 + np.exp(-x))
-    return sigmoid
+    def sigmoid(self, x):
+        return (1 / (1 + np.exp(-x)))
 
-  def sigmoid_deriv(self, x):
-    sigmoid_deriv = np.exp(-x)/((1 + np.exp(-x))**2)
-    return sigmoid_deriv
+    def sigmoid_deriv(self, x):
+        return np.exp(-x)/((1 + np.exp(-x))**2)
 
-  def train(self, inputs, expected_outputs, its):
-    for iteration in range(its):
-        guessed_outputs = self.results(inputs)
-        error = expected_outputs - guessed_outputs
-        slope = self.sigmoid_deriv(guessed_outputs)
-        error = error * slope
-        self.synapse_weights += np.dot(ts_inputs.T, error)
+    def train(self, inputs, real_outputs, its, lr):
 
-  def results(self, inputs):
-    inputs = inputs.astype(float)
-    output = self.sigmoid(np.dot(inputs, self.synapse_weights))
-    return output
+        delta_weights = np.zeros((4,7))
+
+        for iteration in (range(its)):
+
+            # forward pass
+            z = np.dot(inputs, self.syn_weights)
+            activation = self.sigmoid(z)
+
+            # back pass
+            for i in range(7):
+                cost = (activation[i] - real_outputs[i])**2
+                cost_prime = 2*(activation[i] - real_outputs[i])
+                for n in range(4):
+                    delta_weights[n][i] = cost_prime * inputs[i][n] * self.sigmoid_deriv(z[i])
+
+            delta_avg = np.array([np.average(delta_weights, axis=1)]).T
+            self.syn_weights = self.syn_weights - delta_avg*lr
+
+    def results(self, inputs):
+        return self.sigmoid(np.dot(inputs, self.syn_weights))
+
 
 if __name__ == "__main__":
 
-  ts_inputs = np.array([[0,0,1,0],[1,1,1,0],[1,0,1,1],[0,1,1,1],[0,1,0,1],[1,1,1,1],[0,0,0,0]])
-  ts_outputs = np.array([[0,1,1,0,0,1,0]]).T
+    ts_input = np.array([[0,0,1,0],
+                         [1,1,1,0],
+                         [1,0,1,1],
+                         [0,1,1,1],
+                         [0,1,0,1],
+                         [1,1,1,1],
+                         [0,0,0,0]])
 
-  test_data = np.array([0,1,1,0])
-  neural_network = NeuralNetwork()
-  neural_network.train(ts_inputs, ts_outputs, 500)
-  print(neural_network.results(test_data))
+    ts_output = np.array([[0,1,1,0,0,1,0]]).T # First Value of Input = output
+
+    testing_data = np.array([[0,1,1,0],[0,0,0,1],[0,1,0,0],[1,0,0,1],[1,0,0,0],[1,1,0,0],[1,0,1,0]])
+
+    lr = 10
+    steps = 10000
+    perceptron = Perceptron()
+    perceptron.train(ts_input, ts_output, steps, lr)
+
+    results = []
+    for x in (range(len(testing_data))):
+        run = testing_data[x]
+        trial = perceptron.results(run)
+        results.append(trial.tolist())
+    print("results")
+    print(results)
+    print(np.ravel(np.rint(results)))
