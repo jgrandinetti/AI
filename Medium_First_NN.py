@@ -46,12 +46,18 @@ if __name__ == "__main__":
 
     ts_output = np.array([[0,1,1,0,0,1,0]]).T # First Value of Input = output
 
-    testing_data = np.array([[0,1,1,0],[0,0,0,1],[0,1,0,0],[1,0,0,1],[1,0,0,0],[1,1,0,0],[1,0,1,0]])
+    testing_data = np.array([[0,1,1,0],
+                             [0,0,0,1],
+                             [0,1,0,0],
+                             [1,0,0,1],
+                             [1,0,0,0],
+                             [1,1,0,0],
+                             [1,0,1,0]])
 
-    lr = 10
+    lr = 10 # Learning Rate
     steps = 10000
-    perceptron = Perceptron()
-    perceptron.train(ts_input, ts_output, steps, lr)
+    perceptron = Perceptron() # Initialize a perceptron
+    perceptron.train(ts_input, ts_output, steps, lr) # Train the perceptron
 
     results = []
     for x in (range(len(testing_data))):
@@ -60,4 +66,5 @@ if __name__ == "__main__":
         results.append(trial.tolist())
     print("results")
     print(results)
-    print(np.ravel(np.rint(results)))
+    print(np.ravel(np.rint(results))) # View rounded results
+    print(perceptron.syn_weights)
